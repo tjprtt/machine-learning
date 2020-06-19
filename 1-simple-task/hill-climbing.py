@@ -16,6 +16,22 @@ class SlidingTileSet:
     self.tiles = list(range(0, 9))
     shuffle(self.tiles)
   
+  def __str__(self):
+    """String representation in 3x3 grid"""
+    output_string = ""
+    output_string += str(self.tiles[0])
+    output_string += str(self.tiles[1])
+    output_string += str(self.tiles[2])
+    output_string += '\n'
+    output_string += str(self.tiles[3])
+    output_string += str(self.tiles[4])
+    output_string += str(self.tiles[5])
+    output_string += '\n'
+    output_string += str(self.tiles[6])
+    output_string += str(self.tiles[7])
+    output_string += str(self.tiles[8])
+    return output_string
+
   def get_moveable_tiles(self):
     """Returns tiles adjacent to 0 and therefore moveable"""
     moveable_tiles = []
@@ -31,5 +47,5 @@ l = []
 l_seen = []
 
 start = SlidingTileSet()
-print(start.tiles)
+print(start)
 print(start.get_moveable_tiles())
