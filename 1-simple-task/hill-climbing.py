@@ -2,13 +2,7 @@
 # Based on Kubat's 'An Introduction to Machine Learning'
 
 from random import shuffle
-
-def compare_states(state_1, state_2):
-  if state_1 is None and state_2 is None:
-    return True
-  if state_1 is None or state_2 is None:
-    return False
-  
+from math import floor
 
 class SlidingTileSet:
   """Represents one state of sliding tiles 0-9 and associated functions"""
@@ -37,12 +31,16 @@ class SlidingTileSet:
     """Returns tiles adjacent to 0 and therefore moveable"""
     moveable_tiles = []
     zero_index = self.tiles.index(0)
-    zero_remainder = zero_index % 3
+    zero_col = zero_index % 3
+    zero_row = floor( zero_index / 3 )
     for index, tile in enumerate(self.tiles):
-      if index % 3 == zero_remainder and tile != 0:
+      tile_col = index % 3
+      tile_row = floor( index / 3 )
+      if ((tile_col == zero_col + 1 or tile_col == zero_col - 1) and tile_row == zero_row ) \
+      or ((tile_row == zero_row + 1 or tile_row == zero_row - 1) and tile_col == zero_col):
         moveable_tiles.append(tile)
     return moveable_tiles
-  
+
   def matching_tiles(self, other_tileset):
     """Returns number of matching tiles between two tilesets"""
     matches = 0
@@ -50,11 +48,30 @@ class SlidingTileSet:
       if self.tiles[i] == other_tileset.tiles[i]:
         matches += 1
     return matches
+  
+  def swap_tiles(self, tile1, tile2):
+    """Exchanges two tiles in tileset by value"""
+
 
 # HILL-CLIMBING ALGORITHM
 # 1. Create two lists, l and l_seen. l contains the initial state.
 initial = SlidingTileSet()
 final = SlidingTileSet()
+print('Initial State:')
+print(initial)
+print('Final State:')
+print(final)
+print('#########')
 
-print(initial,'\n',final)
-print(initial.matching_tiles(final))
+l = [initial]
+l_seen = []
+
+print(initial.moveable_tiles())
+
+# 2. Check if l[0] matches final state
+while True:
+  if (final.matching_tiles(l[0]) == 9):
+    print('SUCCESS!')
+    break
+  # Apply all available search operators to current state
+  # to obtain a set of new states
