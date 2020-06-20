@@ -8,6 +8,7 @@ def compare_states(state_1, state_2):
     return True
   if state_1 is None or state_2 is None:
     return False
+  
 
 class SlidingTileSet:
   """Represents one state of sliding tiles 0-9 and associated functions"""
@@ -32,7 +33,7 @@ class SlidingTileSet:
     output_string += str(self.tiles[8])
     return output_string
 
-  def get_moveable_tiles(self):
+  def moveable_tiles(self):
     """Returns tiles adjacent to 0 and therefore moveable"""
     moveable_tiles = []
     zero_index = self.tiles.index(0)
@@ -41,11 +42,19 @@ class SlidingTileSet:
       if index % 3 == zero_remainder and tile != 0:
         moveable_tiles.append(tile)
     return moveable_tiles
+  
+  def matching_tiles(self, other_tileset):
+    """Returns number of matching tiles between two tilesets"""
+    matches = 0
+    for i in range(9):
+      if self.tiles[i] == other_tileset.tiles[i]:
+        matches += 1
+    return matches
 
+# HILL-CLIMBING ALGORITHM
+# 1. Create two lists, l and l_seen. l contains the initial state.
+initial = SlidingTileSet()
+final = SlidingTileSet()
 
-l = []
-l_seen = []
-
-start = SlidingTileSet()
-print(start)
-print(start.get_moveable_tiles())
+print(initial,'\n',final)
+print(initial.matching_tiles(final))
