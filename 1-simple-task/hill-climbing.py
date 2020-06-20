@@ -51,6 +51,10 @@ class SlidingTileSet:
   
   def swap_tiles(self, tile1, tile2):
     """Exchanges two tiles in tileset by value"""
+    tile1_index = self.tiles.index(tile1)
+    tile2_index = self.tiles.index(tile2)
+    self.tiles[tile1_index] = tile2
+    self.tiles[tile2_index] = tile1
 
 
 # HILL-CLIMBING ALGORITHM
@@ -67,6 +71,8 @@ l = [initial]
 l_seen = []
 
 print(initial.moveable_tiles())
+initial.swap_tiles(0, 1)
+print(initial)
 
 # 2. Check if l[0] matches final state
 while True:
