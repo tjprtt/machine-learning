@@ -25,6 +25,12 @@ class Classifier:
     self.radius = 0.1
     while(len(self.get_interior_examples(examples)) > 1):
       self.radius = self.radius / 2
+
+  def __eq__(self, obj):
+    x_match = (self.center.x == obj.center.x)
+    y_match = (self.center.y == obj.center.y)
+    radius_match = (self.radius == obj.radius)
+    return (x_match and y_match and radius_match) 
   
   def get_interior_examples(self, examples):
     """Returns a list of examples within the radius of the classifier"""
@@ -44,9 +50,13 @@ class Classifier:
   
   def increase_radius(self, examples):
     """Increase radius until interior_examples increases by 1"""
-    
+    initial_count = self.get_interior_examples(examples)
+    while (initial_count == self.get_interior_examples(examples)):
+      self.radius += self.radius + 0.1
 
-def eval_func(classifier, examples):
+examples = [Example(1, 1, True), Example(1.1, 1, False)]
+
+def eval_func(classifier, examples=examples):
   """Determines % of examples correctly classified"""
   total = len(examples)
   total_correct = 0
@@ -94,9 +104,27 @@ while True:
   # Increase radius if there are any examples outside it
   exterior_examples = current_state.get_exterior_examples(examples)
   if (len(exterior_examples) > 0):
-    current_state.increase_radius()
+    new_state = Classifier(examples)
+    new_state.center.x = current_state.center.x
+    new_state.center.y = current_state.center.y
+    new_state.radius = current_state.radius
+    new_state.increase_radius(examples)
+    if (new_state != current_state):
+      new_search_states.append(new_state)
 
-  if (current_state.get_interior_examples(examples))
+  # Move center to other examples
+  for i in current_state.get_exterior_examples(examples):
+    new_state = Classifier(examples)
+    new_state.center.x = i.x
+    new_state.center.y = i.y
+    new_state.radius = current_state.radius
+    new_search_states.append(new_state)
+  
+  # Discard search states we have already viewed
+  new_search_states = [x for x in new_search_states if x not in seen_states]
+  
+  # Sort the remaining by the evaluation function
+  new_search_states.sort(key=eval_func)
 
   counter += 1
   print('====================')
