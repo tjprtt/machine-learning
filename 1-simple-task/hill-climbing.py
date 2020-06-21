@@ -56,28 +56,67 @@ class SlidingTileSet:
     self.tiles[tile1_index] = tile2
     self.tiles[tile2_index] = tile1
 
-
 # HILL-CLIMBING ALGORITHM
-# 1. Create two lists, l and l_seen. l contains the initial state.
 initial = SlidingTileSet()
+# initial.tiles = [0,1,2,3,4,5,6,7,8,9]
 final = SlidingTileSet()
+# final.tiles = [1,0,2,3,4,5,6,7,8,9]
 print('Initial State:')
 print(initial)
 print('Final State:')
 print(final)
 print('#########')
 
+def evaluation_func1(state):
+  result = 9-final.matching_tiles(state)
+  return result
+
+# Create two lists, l and l_seen. l contains the initial state.
 l = [initial]
 l_seen = []
 
-print(initial.moveable_tiles())
-initial.swap_tiles(0, 1)
-print(initial)
-
-# 2. Check if l[0] matches final state
+counter = 0
 while True:
+  #Check if l[0] matches final state
   if (final.matching_tiles(l[0]) == 9):
     print('SUCCESS!')
     break
-  # Apply all available search operators to current state
-  # to obtain a set of new states
+
+  # Apply search operators to obtain new search states
+  search_operators = l[0].moveable_tiles()
+  search_states = []
+  for i in search_operators:
+    new_state = SlidingTileSet()
+    new_state.tiles = l[0].tiles.copy()
+    new_state.swap_tiles(0, i)
+
+    # Only keep states not already visited
+    is_seen = False
+    for seen_state in l_seen:
+      if (seen_state.matching_tiles(new_state) == 9):
+        is_seen = True
+    if is_seen == False:
+      search_states.append(new_state)
+  
+  # Sort the new search states by the evaluation function
+  search_states.sort(key=evaluation_func1)
+  
+  # Move l[0] from l to l_seen
+  l_seen = [ l[0] ] + l_seen
+  l.remove(l[0])
+
+  # Place new search states at front of l
+  l = search_states + l
+
+  # If len(l) is 0, then stop and report failure
+  if len(l) == 0:
+    print('FAILURE')
+    break
+  
+  # print(*search_states)
+  print('#######STEP NO. ' + str(counter))
+  print('#######STATES GENERATED: ' + str(len(l)))
+  print('#######STATES SEEN: ' + str(len(l_seen)))
+  print(l[0])
+  print('\n')
+  counter += 1
