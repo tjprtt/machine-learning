@@ -35,6 +35,16 @@ class Classifier:
       if (d2 < r2):
         interior_examples.append(example)
     return interior_examples
+  
+  def get_exterior_examples(self, examples):
+    """Returns a list of examples outside the radius of the classifier"""
+    interior_examples = self.get_interior_examples(examples)
+    exterior_examples = [x for x in examples if x not in interior_examples]
+    return exterior_examples
+  
+  def increase_radius(self, examples):
+    """Increase radius until interior_examples increases by 1"""
+    
 
 def eval_func(classifier, examples):
   """Determines % of examples correctly classified"""
@@ -46,22 +56,47 @@ def eval_func(classifier, examples):
     if (example.is_positive == True): 
       total_correct += 1
 
-  exterior_examples = [x for x in examples if x not in interior_examples]
+  exterior_examples = classifier.get_exterior_examples(examples)
   for example in exterior_examples:
     if (example.is_positive == False):
       total_correct += 1
   
   return total_correct / total
-  
-
 
 examples = [Example(1, 1, True), Example(1.1, 1, False)]
 initial_state = Classifier(examples)
 
 print(eval_func(initial_state, examples))
-
-
-
-
-
 print(initial_state.center, initial_state.radius)
+
+# Create lists of search states and seen search states
+search_states = [initial_state]
+seen_states = []
+
+accuracy_goal = 0.75
+counter = 0
+
+while True:
+  current_state = search_states[0]
+  accuracy = eval_func(current_state, examples)
+
+  print('Step ' + str(counter) + ': ')
+  print('Classifier of radius ' + str(current_state.radius) + ', centered on (' + str(current_state.center.x) + ', ' + str(current_state.center.y) + ')')
+  print('Accuracy of ' + str(accuracy))
+
+  if (accuracy > accuracy_goal):
+    print('Acceptable classifier found!')
+    break
+
+  # Apply all possible search operators to get a set of new search states
+  new_search_states = []
+
+  # Increase radius if there are any examples outside it
+  exterior_examples = current_state.get_exterior_examples(examples)
+  if (len(exterior_examples) > 0):
+    current_state.increase_radius()
+
+  if (current_state.get_interior_examples(examples))
+
+  counter += 1
+  print('====================')
