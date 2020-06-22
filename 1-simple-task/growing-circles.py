@@ -54,30 +54,30 @@ class Classifier:
     while (initial_count == self.get_interior_examples(examples)):
       self.radius += self.radius + 0.1
 
-examples = [Example(1, 1, True), Example(1.1, 1, False)]
-
-def eval_func(classifier, examples=examples):
-  """Determines % of examples correctly classified"""
-  total = len(examples)
-  total_correct = 0
-
-  interior_examples = classifier.get_interior_examples(examples) 
-  for example in interior_examples:
-    if (example.is_positive == True): 
-      total_correct += 1
-
-  exterior_examples = classifier.get_exterior_examples(examples)
-  for example in exterior_examples:
-    if (example.is_positive == False):
-      total_correct += 1
+class Eval:
+  def __init__(self, examples):
+    self.examples = examples
   
-  return total_correct / total
+  def func(self, classifier):
+    """Determines % of examples correctly classified"""
+    total = len(self.examples)
+    total_correct = 0
+
+    interior_examples = classifier.get_interior_examples(self.examples) 
+    for example in interior_examples:
+      if (example.is_positive == True): 
+        total_correct += 1
+
+    exterior_examples = classifier.get_exterior_examples(self.examples)
+    for example in exterior_examples:
+      if (example.is_positive == False):
+        total_correct += 1
+  
+    return total_correct / total
 
 examples = [Example(1, 1, True), Example(1.1, 1, False)]
+eval = Eval(examples)
 initial_state = Classifier(examples)
-
-print(eval_func(initial_state, examples))
-print(initial_state.center, initial_state.radius)
 
 # Create lists of search states and seen search states
 search_states = [initial_state]
@@ -88,7 +88,7 @@ counter = 0
 
 while True:
   current_state = search_states[0]
-  accuracy = eval_func(current_state, examples)
+  accuracy = eval.func(current_state)
 
   print('Step ' + str(counter) + ': ')
   print('Classifier of radius ' + str(current_state.radius) + ', centered on (' + str(current_state.center.x) + ', ' + str(current_state.center.y) + ')')
@@ -124,7 +124,7 @@ while True:
   new_search_states = [x for x in new_search_states if x not in seen_states]
   
   # Sort the remaining by the evaluation function
-  new_search_states.sort(key=eval_func)
+  new_search_states.sort(key=eval.func)
 
   counter += 1
   print('====================')
